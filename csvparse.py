@@ -66,6 +66,16 @@ class Header:
 			dictionary[header] = header
 		return dictionary[header]
 
+class ReportType:
+	def __init__(self, reportHeaders):
+		self.reportHeaders = reportHeaders
+
+	# take the raw data, filter only the ones contained in reportHeaders, and save a new csv?
+	def generateReport(self, reportData):
+		# ensure all required headers are present in the data
+		# 
+		pass
+
 
 
 import csv
