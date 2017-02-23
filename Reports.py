@@ -10,10 +10,16 @@ class ReportType:
 		self.name = name
 		self.headers = headers 
 		self.conditions = conditions
+		
 	# Takes a list of reports, returns a list of reports matching the conditions
 	# containing only the headers listed
-	def GenerateReport(self, reports):
+	def GeneratePrunedReports(self, rawReports):
 		prunedReports = []
+		reports = []
+		# remove headers from rawReports
+		headers = rawReports.pop(0)
+		for report in rawReports:
+			reports.append(Report(headers,report))
 		for report in reports:
 			if report.MeetsConditions(conditions):
 				prunedReports.append(report.prune(headers))
@@ -27,8 +33,13 @@ class FileIO:
 			fileReader = csv.reader(data, delimiter = ';')
 			for row in fileReader:
 				rawData.append(row)
+		# remove 'SEP=;' that is in this file
 		rawData.pop(0)
 		return rawData
+	
+	# take a list of Reports, generates a csv from the reports
+	def SaveCSV(self, name, reportList):
+		raise NotImplementedError
 
 	def UpdateHeaderList(self, headerDict, rawHeaders):
 		for rawHeader in rawHeaders:
@@ -47,13 +58,23 @@ class FileIO:
 		with open(name, 'a') as rawFile:
 			rawFile.write(str(data))
 
+class HeaderDictionary:
+	def __init__(self, headers):
+		self.headers = headers
+
+	def UpdateHeaders(self,rawHeaders):
+		for header in rawHeaders:
+			if not self.headers.has_key(header):
+				self.headers[header] = header
 
 class Report:
 	"""docstring for Report
 		reportData[rawHeader] = value
 	"""
-	def __init__(self, reportData):
-		self.reportData = reportData
+	def __init__(self, headersList, reportData):
+		self.reportData = {}
+		for i in range(len(headersList)):
+			self.reportData[headersList[i]] = reportData[i] 
 
 	def MeetsConditions(self, conditions):
 		for key, value in conditions:
@@ -63,7 +84,7 @@ class Report:
 	
 	def prune(self, headers):
 		prunedReport = {}
-		for key, value in headers:
+		for key, value in headers.headers:
 			#TODO: possibly throw missing header error here?
 			prunedReport[key] = self.reportData[key]
 		return prunedReport
