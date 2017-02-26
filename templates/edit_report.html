@@ -1,0 +1,63 @@
+<!doctype html>
+<html>
+<body>
+We should have a pair of columns here, one labeled "available headers", and the other labeled
+"current headers for report type:" or similar.
+
+Interactions on this page include, renaming headers, adding/removing headers from the "current headers" list, and saving or cancelling changes to the list
+
+<form action="/action_page.php">
+<select name="available_headers" onDblClick="changeTextValue(this.value)" multiple>
+
+	{% for key, value in allHeaders.items() %}
+	<option value = {{ key }}>{{ value }}</option>
+	{% endfor %}
+
+</select>
+
+
+</form>
+<script type="text/javascript">
+//TODO: This function should throw a modal window to change the human readable value of the header
+ function changeTextValue(key) {
+ 	var value = prompt("Please enter a new value for the header:",key);
+ 	
+ 	if (value != null) {
+ 		// save to server
+ 		post('/update_name', {'key':key,'value':value, 'reportType':'{{reportType}}'});
+ 	}
+ }
+
+ // With credit to: http://stackoverflow.com/questions/133925/javascript-post-request-like-a-form-submit
+ // Usage: post('/contact/', {name: 'Johnny Bravo'});
+function post(path, params, method) {
+    method = method || "post"; // Set method to post by default if not specified.
+
+    // The rest of this code assumes you are not using a library.
+    // It can be made less wordy if you use one.
+    var form = document.createElement("form");
+    form.setAttribute("method", method);
+    form.setAttribute("action", path);
+
+    for(var key in params) {
+        if(params.hasOwnProperty(key)) {
+            var hiddenField = document.createElement("input");
+            hiddenField.setAttribute("type", "hidden");
+            hiddenField.setAttribute("name", key);
+            hiddenField.setAttribute("value", params[key]);
+
+            form.appendChild(hiddenField);
+         }
+    }
+
+    document.body.appendChild(form);
+    form.submit();
+}
+
+
+
+</script>
+
+
+</body>
+</html>

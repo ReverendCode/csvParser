@@ -29,7 +29,7 @@ class FileIO:
 	"""docstring for FileIO"""
 	def LoadCSV(self, name):
 		rawData = []
-		with open(name,'rb') as data:
+		with open(name,'r') as data:
 			fileReader = csv.reader(data, delimiter = ';')
 			for row in fileReader:
 				rawData.append(row)
@@ -49,7 +49,7 @@ class FileIO:
 
 	def LoadOrCreateDictionary(self, name):
 		try:
-			newDict = open(name,'rb').read()
+			newDict = open(name,'r').read()
 			return eval(newDict)
 		except IOError:
 			return {}
@@ -62,10 +62,15 @@ class HeaderDictionary:
 	def __init__(self, headers):
 		self.headers = headers
 
-	def UpdateHeaders(self,rawHeaders):
+	def AddHeaders(self,rawHeaders):
 		for header in rawHeaders:
-			if not self.headers.has_key(header):
+			if header not in self.headers:
 				self.headers[header] = header
+
+	def UpdateHeaders(self, headers):
+		for key in headers:
+			self.headers[key] = headers[key]
+
 
 class Report:
 	"""docstring for Report
